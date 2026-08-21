@@ -14,9 +14,30 @@ const createPost = async(data:Omit<Post,"id" | "createdAt" | "updatedAt" | "auth
 const getAllPost = async() => {
     const result = await prisma.post.findMany();
     return result;
+};
+
+const getSinglePost = async(id:string) => {
+    const result = await prisma.post.findUnique({
+        where:{
+            id:id
+        }
+    });
+    return result;
+};
+
+const updatePost = async (id:string,data:any) => {
+    const result = await prisma.post.update({
+        where:{
+            id:id
+        },
+        data,
+    });
+    return result;
 }
 
 export const postService = {
     createPost,
-    getAllPost
+    getAllPost,
+    getSinglePost,
+    updatePost
 }

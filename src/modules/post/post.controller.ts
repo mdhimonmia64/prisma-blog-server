@@ -1,6 +1,5 @@
 import {Request,Response} from 'express';
 import { postService } from './post.service';
-import { success } from 'better-auth';
 
 
 const createPost = async(req:Request,res:Response) => {
@@ -36,7 +35,41 @@ const getAllPost = async(req:Request,res:Response) => {
     }
 }
 
+const getSinglePost = async(req:Request,res:Response) => {
+    try{
+        const id = req.params.id
+        const result = await postService.getSinglePost(id as string);
+        res.status(200).json({
+            success:true,
+            data:result
+        })
+    }catch(error){
+        res.status(400).json({
+            success:false,
+            error:'single data not found'
+        })
+    }
+}
+
+const updatePost = async (req:Request,res:Response) => {
+    try{
+        const id = req.params.id
+        const result = await postService.updatePost(id as string,req.body);
+         res.status(200).json({
+            success:true,
+            data:result
+        })
+    }catch(error){
+        res.status(400).json({
+            success:false,
+            error:"not updated data"
+        })
+    }
+}
+
 export const postController = {
     createPost,
-    getAllPost
+    getAllPost,
+    getSinglePost,
+    updatePost
 }
