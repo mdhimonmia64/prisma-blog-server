@@ -1,8 +1,9 @@
 import {Request,Response} from 'express';
 import { postService } from './post.service';
+import { date, success } from 'better-auth';
 
 
-const createPost = async(req:Request,res:Response) => {
+const createPost = async (req:Request,res:Response) => {
     try{
         const user = req.user;
         if(!user){
@@ -20,7 +21,7 @@ const createPost = async(req:Request,res:Response) => {
     }
 };
 
-const getAllPost = async(req:Request,res:Response) => {
+const getAllPost = async (req:Request,res:Response) => {
     try{
         const result = await postService.getAllPost();
         res.status(200).json({
@@ -35,7 +36,7 @@ const getAllPost = async(req:Request,res:Response) => {
     }
 }
 
-const getSinglePost = async(req:Request,res:Response) => {
+const getSinglePost = async (req:Request,res:Response) => {
     try{
         const id = req.params.id
         const result = await postService.getSinglePost(id as string);
@@ -67,9 +68,26 @@ const updatePost = async (req:Request,res:Response) => {
     }
 }
 
+const deletePost = async (req:Request,res:Response) => {
+    try{
+        const id = req.params.id;
+        const result = await postService.deletePost(id as string);
+        res.status(201).json({
+            success:true,
+            data:result
+        })
+    }catch(error){
+        res.status(400).json({
+            success:false,
+            error:'data not deleted'
+        })
+    }
+}
+
 export const postController = {
     createPost,
     getAllPost,
     getSinglePost,
-    updatePost
+    updatePost,
+    deletePost
 }

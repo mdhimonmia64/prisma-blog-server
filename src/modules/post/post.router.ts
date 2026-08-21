@@ -13,4 +13,6 @@ router.post("/",auth(UserRole.USER),postController.createPost)
 
 router.patch("/:id",postController.updatePost)
 
+router.delete("/:id",postController.deletePost)
+
 export const postRouter:Router = router;
