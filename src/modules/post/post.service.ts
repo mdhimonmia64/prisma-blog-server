@@ -13,7 +13,7 @@ const createPost = async(data:Omit<Post,"id" | "createdAt" | "updatedAt" | "auth
 };
 
 
-const getAllPost = async({search,tags}:{search:string | undefined,tags:string[] | []}) => {
+const getAllPost = async({search,tags,isFeatured}:{search:string | undefined,tags:string[] | [],isFeatured:boolean | undefined}) => {
 
     const andConditions:PostWhereInput[] = []
 
@@ -46,6 +46,12 @@ const getAllPost = async({search,tags}:{search:string | undefined,tags:string[] 
                 tags:{
                 hasEvery:tags as string[]
             }
+        })
+    }
+
+    if(typeof isFeatured === 'boolean'){
+        andConditions.push({
+            isFeatured
         })
     }
 
