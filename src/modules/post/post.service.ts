@@ -13,7 +13,7 @@ const createPost = async(data:Omit<Post,"id" | "createdAt" | "updatedAt" | "auth
 };
 
 
-const getAllPost = async({search,tags,isFeatured,status,authorId,page,limit}:{search:string | undefined,tags:string[] | [],isFeatured:boolean | undefined,status:PostStatus | undefined,authorId:string | undefined,page:number,limit:number}) => {
+const getAllPost = async({search,tags,isFeatured,status,authorId,page,limit,skip,sortBy,sortOrder}:{search:string | undefined,tags:string[] | [],isFeatured:boolean | undefined,status:PostStatus | undefined,authorId:string | undefined,page:number,limit:number,skip:number,sortBy:string,sortOrder:string }) => {
 
     const andConditions:PostWhereInput[] = []
 
@@ -68,8 +68,13 @@ const getAllPost = async({search,tags,isFeatured,status,authorId,page,limit}:{se
     }
 
     const result = await prisma.post.findMany({
+        take:limit,
+        skip,
         where:{
             AND:andConditions
+        },
+        orderBy: { 
+            [sortBy]:sortOrder
         }
     });
     return result;
