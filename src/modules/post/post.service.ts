@@ -13,7 +13,7 @@ const createPost = async(data:Omit<Post,"id" | "createdAt" | "updatedAt" | "auth
 };
 
 
-const getAllPost = async({search,tags,isFeatured,status,authorId}:{search:string | undefined,tags:string[] | [],isFeatured:boolean | undefined,status:PostStatus | undefined,authorId:string | undefined}) => {
+const getAllPost = async({search,tags,isFeatured,status,authorId,page,limit}:{search:string | undefined,tags:string[] | [],isFeatured:boolean | undefined,status:PostStatus | undefined,authorId:string | undefined,page:number,limit:number}) => {
 
     const andConditions:PostWhereInput[] = []
 
