@@ -68,7 +68,10 @@ const getAllPost = async (req:Request,res:Response) => {
 
 const getSinglePost = async (req:Request,res:Response) => {
     try{
-        const id = req.params.id
+        const {id }= req.params
+        if(!id){
+            throw new Error("Post Id is required")
+        }
         const result = await postService.getSinglePost(id as string);
         res.status(200).json({
             success:true,

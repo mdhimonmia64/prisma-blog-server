@@ -96,12 +96,24 @@ const getAllPost = async({search,tags,isFeatured,status,authorId,page,limit,skip
 };
 
 const getSinglePost = async(id:string) => {
-    const result = await prisma.post.findUnique({
+    return await prisma.$transaction(async (tx) => {
+        await tx.post.update({
         where:{
-            id:id
+            id
+        },
+        data:{
+            views:{
+                increment:1
+            }
+        }
+    })
+    const postData = await tx.post.findUnique({
+        where:{
+            id
         }
     });
-    return result;
+    return postData;
+    })
 };
 
 const updatePost = async (id:string,data:any) => {
