@@ -28,7 +28,22 @@ const getCommentById = async (req:Request,res:Response) => {
     }
 }
 
+const getCommentByAuthor = async (req:Request,res:Response) => {
+    try{
+        const {authorId} = req.params
+        const result = await CommentService.getCommentByAuthor(authorId as string)
+        res.status(200).json(result)
+    }catch(e){
+        res.status(400).json({
+            success:false,
+            error:"Comment authorId failed",
+            details:e
+        })
+    }
+}
+
 export const CommentController = {
     createComment,
-    getCommentById
+    getCommentById,
+    getCommentByAuthor
 }
