@@ -117,10 +117,30 @@ const deletePost = async (req:Request,res:Response) => {
     }
 }
 
+const getMyPosts = async (req:Request,res:Response) => {
+    try{
+        const user = req.user;
+        if(!user){
+            throw new Error('You are unauthorized!')
+        }
+        console.log(user)
+        const result = await postService.getMyPosts(user.id)
+        res.status(200).json(result)
+    }catch(e){
+        const errorMessage = (e instanceof Error) ? e.message : "data not found"
+        res.status(400).json({
+            success:false,
+            error:errorMessage,
+            details:e
+        })
+    }
+}
+
 export const postController = {
     createPost,
     getAllPost,
     getSinglePost,
     updatePost,
-    deletePost
+    deletePost,
+    getMyPosts
 }

@@ -162,7 +162,7 @@ const getSinglePost = async(id:string) => {
 const updatePost = async (id:string,data:any) => {
     const result = await prisma.post.update({
         where:{
-            id:id
+            id
         },
         data,
     });
@@ -172,10 +172,23 @@ const updatePost = async (id:string,data:any) => {
 const deletePost = async (id:string) => {
     const result = await prisma.post.delete({
         where:{
-            id:id
+            id
         },
     })
     return result
+}
+
+const getMyPosts = async (authorId:string) => {
+    const result = await prisma.post.findMany({
+        where:{
+            id:authorId
+        },
+        orderBy:{
+            createdAt:"desc"
+        }
+    })
+
+    return result;
 }
 
 export const postService = {
@@ -183,5 +196,6 @@ export const postService = {
     getAllPost,
     getSinglePost,
     updatePost,
-    deletePost
+    deletePost,
+    getMyPosts
 }
