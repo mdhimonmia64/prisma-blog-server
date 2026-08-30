@@ -2,6 +2,7 @@ import {Request,Response} from 'express';
 import { postService } from './post.service';
 import { PostStatus } from '../../../generated/prisma/enums';
 import paginationSortingHelper from '../../helpers/paginationSortingHelper';
+import { UserRole } from '../../middleware/auth';
 
 
 const createPost = async (req:Request,res:Response) => {
@@ -59,9 +60,11 @@ const getAllPost = async (req:Request,res:Response) => {
             data:result
         })
     }catch(error){
+        const errorMessage = (error instanceof Error) ? error.message : 'get failed'
         res.status(400).json({
             success:false,
-            error:'get failed'
+            error: errorMessage,
+            details:error
         })
     }
 }
@@ -78,9 +81,11 @@ const getSinglePost = async (req:Request,res:Response) => {
             data:result
         })
     }catch(error){
+        const errorMessage = (error instanceof Error) ? error.message : 'single data not found'
         res.status(400).json({
             success:false,
-            error:'single data not found'
+            error: errorMessage,
+            details:error
         })
     }
 }
@@ -94,9 +99,11 @@ const updatePost = async (req:Request,res:Response) => {
             data:result
         })
     }catch(error){
+        const errorMessage = (error instanceof Error) ? error.message : "not updated data"
         res.status(400).json({
             success:false,
-            error:"not updated data"
+            error: errorMessage,
+            details:error
         })
     }
 }
@@ -110,9 +117,11 @@ const deletePost = async (req:Request,res:Response) => {
             data:result
         })
     }catch(error){
+        const errorMessage = (error instanceof Error) ? error.message : 'data not deleted'
         res.status(400).json({
             success:false,
-            error:'data not deleted'
+            error:errorMessage,
+            details:error
         })
     }
 }
@@ -136,11 +145,33 @@ const getMyPosts = async (req:Request,res:Response) => {
     }
 }
 
+const updatePosts = async (req:Request,res:Response) => {
+    try{
+        const user = req.user
+        if(!user){
+            throw new Error("You are unauthorized!")
+        }
+        const {postId} = req.params
+        const isAdmin = user.role === UserRole.ADMIN
+        console.log(user)
+        const result = await postService.updatePosts(postId as string,req.body,user?.id,isAdmin)
+        res.status(200).json(result)
+    }catch(e){
+        const errorMessage = (e instanceof Error) ? e.message : "data not updated"
+        res.status(400).json({
+            success:false,
+            message:errorMessage,
+            details:e
+        })
+    }
+}
+
 export const postController = {
     createPost,
     getAllPost,
     getSinglePost,
     updatePost,
     deletePost,
-    getMyPosts
+    getMyPosts,
+    updatePosts
 }

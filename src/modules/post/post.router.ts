@@ -13,7 +13,9 @@ router.get("/:id",postController.getSinglePost)
 
 router.post("/",auth(UserRole.USER,UserRole.ADMIN),postController.createPost)
 
-router.patch("/:id",postController.updatePost)
+// router.patch("/:id",postController.updatePost)
+
+router.patch("/:postId",auth(UserRole.ADMIN,UserRole.USER),postController.updatePosts)
 
 router.delete("/:id",postController.deletePost)
 
