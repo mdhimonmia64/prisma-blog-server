@@ -1,6 +1,7 @@
 import { CommentStatus, Post, PostStatus } from "../../../generated/prisma/client";
 import { PostWhereInput } from "../../../generated/prisma/models";
 import { prisma } from "../../lib/prisma";
+import { UserRole } from "../../middleware/auth";
 
 const createPost = async(data:Omit<Post,"id" | "createdAt" | "updatedAt" | "authorId">,userId:string) => {
     const result = await prisma.post.create({
@@ -270,13 +271,20 @@ const deletePosts = async (postId:string,authorId:string,isAdmin:boolean) => {
 
 const getStats = async () => {
     return await prisma.$transaction( async (tx) => {
-        const [totalPosts,publishedPosts,draftPosts,archivedPosts,totalComments,approvedComments] =await Promise.all([
+        const [totalPosts,publishedPosts,draftPosts,archivedPosts,totalComments,approvedComments,rejectComments,totalUsers,adminCount,userCount,totalViews] =await Promise.all([
             await tx.post.count(),
             await tx.post.count({where:{status:PostStatus.PUBLISHED}}),
             await tx.post.count({where:{status:PostStatus.DRAFT}}),
             await tx.post.count({where:{status:PostStatus.ARCHIVED}}),
             await tx.comment.count(),
-            await tx.comment.count({where:{status:CommentStatus.APPROVED}})
+            await tx.comment.count({where:{status:CommentStatus.APPROVED}}),
+            await tx.comment.count({where:{status:CommentStatus.REJECT}}),
+            await tx.user.count(),
+            await tx.user.count({where:{role:'ADMIN'}}),
+            await tx.user.count({where:{role:'USER'}}),
+            await tx.post.aggregate({
+                _count:{views:true}
+            })
          ])
         
         return {
@@ -285,7 +293,12 @@ const getStats = async () => {
             draftPosts,
             archivedPosts,
             totalComments,
-            approvedComments
+            approvedComments,
+            rejectComments,
+            totalUsers,
+            adminCount,
+            userCount,
+            totalViews:totalViews._count.views
         }
     })
 }
