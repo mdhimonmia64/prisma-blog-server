@@ -87,7 +87,7 @@ const getSinglePost = async (req:Request,res:Response) => {
     }
 }
 
-const updatePost = async (req:Request,res:Response) => {
+const updatePost = async (req:Request,res:Response,next:NextFunction) => {
     try{
         const id = req.params.id
         const result = await postService.updatePost(id as string,req.body);
@@ -96,12 +96,7 @@ const updatePost = async (req:Request,res:Response) => {
             data:result
         })
     }catch(error){
-        const errorMessage = (error instanceof Error) ? error.message : "not updated data"
-        res.status(400).json({
-            success:false,
-            error: errorMessage,
-            details:error
-        })
+        next(error)
     }
 }
 
@@ -142,7 +137,7 @@ const getMyPosts = async (req:Request,res:Response) => {
     }
 }
 
-const updatePosts = async (req:Request,res:Response) => {
+const updatePosts = async (req:Request,res:Response,next:NextFunction) => {
     try{
         const user = req.user
         if(!user){
@@ -154,12 +149,7 @@ const updatePosts = async (req:Request,res:Response) => {
         const result = await postService.updatePosts(postId as string,req.body,user?.id,isAdmin)
         res.status(200).json(result)
     }catch(e){
-        const errorMessage = (e instanceof Error) ? e.message : "data not updated"
-        res.status(400).json({
-            success:false,
-            message:errorMessage,
-            details:e
-        })
+        next(e)
     }
 }
 
